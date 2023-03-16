@@ -1,0 +1,9 @@
+mutation addResource($name: String!, $typeId: ID!) {
+    resources {
+        create(name: $name, typeId: $typeId) {
+            id
+            legacyId
+            name
+        }
+    }
+}

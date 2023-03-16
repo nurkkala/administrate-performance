@@ -1,0 +1,16 @@
+query getAllResources {
+    resources {
+        edges {
+            node {
+                id
+                legacyId
+                name
+                type {
+                    id
+                    legacyId
+                    name
+                }
+            }
+        }
+    }
+}

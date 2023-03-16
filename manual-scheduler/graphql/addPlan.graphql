@@ -1,0 +1,23 @@
+mutation addPlan($planInput: PlanCreateInput!) {
+    plan {
+        create(input: $planInput) {
+            plan {
+                id
+                legacyId
+                name
+                start
+                end
+                scheduleBounds {
+                    startTime
+                    endTime
+                    days
+                }
+            }
+            errors {
+                label
+                message
+                value
+            }
+        }
+    }
+}

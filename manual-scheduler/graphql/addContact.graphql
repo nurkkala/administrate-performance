@@ -1,0 +1,22 @@
+mutation addContact($contactInput: ContactCreateInput!) {
+    contact {
+        create(input: $contactInput) {
+            contact {
+                id
+                legacyId
+                isInstructor
+                isStaff
+                isAdmin
+                personalName {
+                    firstName
+                    lastName
+                }
+            }
+            errors {
+                label
+                message
+                value
+            }
+        }
+    }
+}

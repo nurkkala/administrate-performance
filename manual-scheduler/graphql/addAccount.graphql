@@ -1,0 +1,17 @@
+mutation addAccount($accountInput: AccountCreateInput!) {
+    account {
+        create(input: $accountInput) {
+            account {
+                id
+                legacyId
+                name
+                isIndividual
+            }
+            errors {
+                label
+                message
+                value
+            }
+        }
+    }
+}

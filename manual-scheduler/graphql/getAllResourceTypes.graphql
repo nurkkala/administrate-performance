@@ -1,0 +1,12 @@
+query getAllResourceTypes {
+    resourceTypes {
+        edges {
+            node {
+                id
+                legacyId
+                name
+                description
+            }
+        }
+    }
+}

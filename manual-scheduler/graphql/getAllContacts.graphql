@@ -1,0 +1,17 @@
+query getAllContacts {
+    contacts {
+        edges {
+            node {
+                id
+                legacyId
+                isInstructor
+                isStaff
+                isAdmin
+                personalName {
+                    firstName
+                    lastName
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,4 @@
+{
+  "name": "Administrate GraphQL Schema",
+  "schemaPath": "./graphql-schema.json"
+}

@@ -1,0 +1,40 @@
+query getAllCourseTemplates {
+    courseTemplates {
+        edges {
+            node {
+                id
+                legacyId
+                title
+                code
+                approvedInstructors {
+                    edges {
+                        node {
+                            personalName {
+                                firstName
+                                lastName
+                            }
+                        }
+                    }
+                }
+                events {
+                    edges {
+                        node {
+                            classroomStart
+                            classroomEnd
+                        }
+                    }
+                }
+                requiredResources {
+                    id
+                    quantity
+                    resourceType {
+                        id
+                        legacyId
+                        name
+                        description
+                    }
+                }
+            }
+        }
+    }
+}

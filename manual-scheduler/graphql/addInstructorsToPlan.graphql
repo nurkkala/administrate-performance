@@ -1,0 +1,27 @@
+mutation addInstructorsToPlan($instInput: PlanAddInstructorsInput!) {
+    plan {
+        addInstructors(input: $instInput) {
+            plan {
+                id
+                legacyId
+                name
+                instructors {
+                    edges {
+                        node {
+                            id
+                            personalName {
+                                firstName
+                                lastName
+                            }
+                        }
+                    }
+                }
+            }
+            errors {
+                label
+                message
+                value
+            }
+        }
+    }
+}
