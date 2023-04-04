@@ -1,0 +1,12 @@
+query allCompanies {
+    companies {
+        edges {
+            node {
+                id
+                legacyId
+                code
+                name
+            }
+        }
+    }
+}

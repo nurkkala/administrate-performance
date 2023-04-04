@@ -1,6 +1,6 @@
 from devtools import debug
 
-from data.small import single_plan
+from data.sample.small import single_plan
 
 
 def traverse_and_duplicate(obj):

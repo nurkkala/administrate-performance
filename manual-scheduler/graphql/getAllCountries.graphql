@@ -1,0 +1,12 @@
+query allCountries {
+    countries {
+        id
+        code
+        name
+        provinces {
+            code
+            name
+        }
+        timeZones
+    }
+}
