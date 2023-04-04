@@ -1,0 +1,12 @@
+query getAllPlansSimple {
+    plans {
+        edges {
+            node {
+                id
+                legacyId
+                name
+            }
+        }
+    }
+}
+

@@ -1,0 +1,97 @@
+query getPlansList($pageSize: Int, $offset: Int, $filters: [PlanFieldGraphFilter]!) {
+    plans(first: $pageSize, offset: $offset, filters: $filters) {
+        edges {
+            node {
+                id
+                legacyId
+                name
+                start
+                end
+                scheduleBounds {
+                    startTime
+                    endTime
+                    days
+                }
+                location {
+                    id
+                    legacyId
+                    name
+                    description
+                    address {
+                        city
+                        country {
+                            code
+                            name
+                        }
+                    }
+                }
+                status {
+                    solveStatus
+                    lastScore
+                    explainScore
+                    archivedAt
+                    scheduledAt
+                    lifecycleState
+                }
+                instructors {
+                    edges {
+                        node {
+                            id
+                            legacyId
+                            personalName {
+                                firstName
+                                lastName
+                            }
+                        }
+                    }
+                }
+                resources {
+                    edges {
+                        node {
+                            id
+                            legacyId
+                            name
+                            type {
+                                name
+                            }
+                        }
+                    }
+                }
+                eventNeeds {
+                    id
+                    legacyId
+                    courseTemplate {
+                        title
+                    }
+                    sessionNeeds {
+                        id
+                        legacyId
+                        solution {
+                            start
+                            end
+                            instructors {
+                                id
+                                legacyId
+                                personalName {
+                                    firstName
+                                    lastName
+                                }
+                            }
+                            resources {
+                                id
+                                legacyId
+                                name
+                                type {
+                                    name
+                                }
+                            }
+                        }
+                    }
+                    scheduledEvent {
+                        code
+                    }
+                }
+            }
+        }
+    }
+}

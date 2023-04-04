@@ -2,7 +2,7 @@
 name = "manual-scheduler"
 version = "0.1.0"
 description = ""
-authors = ["Tom Nurkkala <tom.nurkkala@gmail.com>"]
+authors = ["Tom Nurkkala <tbn@administrate.co>"]
 readme = "README.md"
 packages = [{include = "manual_scheduler"}]
 
@@ -10,6 +10,8 @@ packages = [{include = "manual_scheduler"}]
 python = "^3.11"
 httpx = "^0.23.3"
 devtools = {extras = ["pygments"], version = "^0.10.0"}
+faker = "^18.3.2"
+pydantic = "^1.10.7"
 
 
 [build-system]
