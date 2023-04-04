@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, time
+from datetime import datetime
 from typing import List
 
 import httpx
@@ -8,7 +8,7 @@ from faker import Faker
 
 from graphql.loader import load_graphql
 from models.plan import Plan
-from traverse import traverse
+from data.traverse import traverse
 
 PHP_SESSION_ID = "4c4edcfc5c334ae49c73ae67f7a2306a"
 URL_BASE = "https://tbn.devadministrateapp.com"
