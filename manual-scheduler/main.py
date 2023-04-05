@@ -2,9 +2,7 @@ import httpx
 from devtools import debug
 
 from data.api_client import PHP_SESSION_ID, BASE_URL
-from models.location import read_countries, read_companies
-from models.plan import create_fake_plan
-from models.resource import read_resources
+from models.location import Country, read_companies, Region, RegionCreateInput
 
 
 def sandbox(client):
@@ -46,7 +44,13 @@ def main():
     with httpx.Client(base_url=BASE_URL, cookies={"PHPSESSID": PHP_SESSION_ID}) as client:
         # create_fake_plan(client)
         # debug(read_countries(client))
-        debug(read_companies(client))
+        # debug(read_companies(client))
+
+        region = Region.fake_region(client)
+        debug(region)
+
+        # debug(read_regions(client))
+        # debug(Country.read_random_country(client))
 
 
 main()

@@ -1,0 +1,22 @@
+query allRegions {
+    regions {
+        edges {
+            node {
+                id
+                legacyId
+                name
+                code
+                company {
+                    id
+                    code
+                    name
+                }
+                countries {
+                    id
+                    code
+                    name
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,28 @@
+mutation addRegion($regInput: RegionCreateInput!) {
+    regions {
+        create(input: $regInput) {
+            region {
+                id
+                legacyId
+                code
+                name
+                company {
+                    id
+                    legacyId
+                    code
+                    name
+                }
+                countries {
+                    id
+                    code
+                    name
+                }
+            }
+            errors {
+                label
+                message
+                value
+            }
+        }
+    }
+}
