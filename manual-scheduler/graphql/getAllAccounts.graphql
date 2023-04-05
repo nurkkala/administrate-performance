@@ -5,6 +5,7 @@ query allAccounts {
                 id
                 legacyId
                 name
+                isIndividual
             }
         }
     }

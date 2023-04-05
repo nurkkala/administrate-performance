@@ -2,6 +2,7 @@ import httpx
 from devtools import debug
 
 from data.api_client import PHP_SESSION_ID, BASE_URL
+from models.instructor import Account, Contact
 from models.location import Location
 from models.plan import Plan
 
@@ -51,14 +52,18 @@ def sandbox(client):
 
     # location = Location.create_fake_location(client)
     # debug(location)
+
+    # plan = Plan.create_fake_plan(client)
+    # debug(plan)
+    # debug(Account.create_fake_account(client))
     pass
 
 
 def main():
     with httpx.Client(base_url=BASE_URL, cookies={"PHPSESSID": PHP_SESSION_ID}) as client:
         sandbox(client)
-        plan = Plan.create_fake_plan(client)
-        debug(plan)
+
+        debug(Contact.create_fake_contact(client))
 
 
 main()

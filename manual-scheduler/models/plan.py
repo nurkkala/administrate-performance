@@ -33,6 +33,12 @@ class PlanCreateInput:
     locationId: str
 
 
+@dataclass
+class PlanAddInstructorsInput:
+    contactIds: List[str]
+    planId: str
+
+
 class ScheduleBounds(BaseModel):
     startTime: time
     endTime: time

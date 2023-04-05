@@ -11,6 +11,12 @@ mutation addContact($contactInput: ContactCreateInput!) {
                     firstName
                     lastName
                 }
+                account {
+                    id
+                    legacyId
+                    name
+                    isIndividual
+                }
             }
             errors {
                 label
