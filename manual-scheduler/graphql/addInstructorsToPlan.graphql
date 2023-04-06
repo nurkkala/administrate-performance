@@ -5,6 +5,33 @@ mutation addInstructorsToPlan($instInput: PlanAddInstructorsInput!) {
                 id
                 legacyId
                 name
+                start
+                end
+                scheduleBounds {
+                    startTime
+                    endTime
+                    days
+                }
+                location {
+                    id
+                    legacyId
+                    name
+                    description
+                    address {
+                        city
+                        country {
+                            code
+                            name
+                        }
+                    }
+                }
+                status {
+                    solveStatus
+                    lastScore
+                    explainScore
+                    archivedAt
+
+                }
                 instructors {
                     edges {
                         node {

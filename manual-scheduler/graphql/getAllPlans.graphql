@@ -7,11 +7,7 @@ query getAllPlans {
                 name
                 start
                 end
-                scheduleBounds {
-                    startTime
-                    endTime
-                    days
-                }
+                ...scheduleBoundsDetails
                 location {
                     id
                     legacyId

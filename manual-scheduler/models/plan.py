@@ -10,7 +10,7 @@ from data.traverse import traverse
 from graphql.loader import load_graphql
 from data.api_client import URL_GRAPHQL
 from models.event_need import EventNeed
-from models.instructor import Instructor
+from models.instructor import Contact
 from models.location import Location
 from models.resource import Resource
 
@@ -63,7 +63,7 @@ class Plan(BaseModel):
     scheduleBounds: ScheduleBounds
     status: Status
     location: Optional[Location]
-    instructors: List[Instructor]
+    instructors: List[Contact]
     resources: List[Resource]
     eventNeeds: List[EventNeed]
 
@@ -87,13 +87,24 @@ class Plan(BaseModel):
         content = traverse(r.json()["data"]["plan"]["create"]["plan"])
         return cls(**content)
 
+    @staticmethod
+    def add_instructors_to_plan(client, plan_add_instructors_input: PlanAddInstructorsInput):
+        r = client.post(URL_GRAPHQL, json={
+            'query': load_graphql("addInstructorsToPlan"),
+            'variables': {'instInput': {
+                'planId': plan_add_instructors_input.planId,
+                "contactIds": plan_add_instructors_input.contactIds
+            }}
+        })
+        return traverse(r.json()["data"]["plan"]["addInstructors"]["plan"])
+
     @classmethod
     def create_fake_plan(cls, client):
         start_date_time = faker.future_datetime()
         end_date_time = start_date_time + timedelta(days=7)
         location = Location.create_fake_location(client)
 
-        plan = PlanCreateInput(
+        plan_input = PlanCreateInput(
             name=faker.sentence(),
             start=start_date_time,
             end=end_date_time,
@@ -102,7 +113,15 @@ class Plan(BaseModel):
                 endTime=time(hour=17),
                 days=["monday", "wednesday", "friday"]),
             locationId=location.id)
-        return cls.create_plan(client, plan)
+        plan = cls.create_plan(client, plan_input)
+
+        contact = Contact.create_fake_contact(client, make_instructor=True)
+        plan = plan.add_instructors_to_plan(
+            client,
+            PlanAddInstructorsInput(planId=plan.id,
+                                    contactIds=[contact.id])
+        )
+        return plan
 
     @staticmethod
     def read_plans_list(client) -> List['Plan']:
@@ -131,8 +150,8 @@ class Plan(BaseModel):
                                         ]
                                     }
                                 ]
-                            }})
-
+                            }
+                        })
         content = r.json()
         filtered_content = traverse(content["data"]["plans"])
         result = {

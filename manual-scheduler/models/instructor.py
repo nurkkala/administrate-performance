@@ -101,13 +101,16 @@ class Contact(BaseModel):
         return cls(**content)
 
     @classmethod
-    def create_fake_contact(cls, client) -> Self:
+    def create_fake_contact(cls, client, make_instructor=False) -> Self:
         accounts = Account.read_all_accounts(client)
         non_individual_accounts = [account for account in accounts if not account.isIndividual]
         assert len(non_individual_accounts) > 0
+
+        is_instructor = True if make_instructor else faker.boolean()
+
         return cls.create_contact(client,
                                   ContactCreateInput(accountId=random.choice(non_individual_accounts).id,
-                                                     isInstructor=faker.boolean(),
+                                                     isInstructor=is_instructor,
                                                      isStaff=faker.boolean(),
                                                      isAdmin=faker.boolean(),
                                                      personalName=PersonalNameCreateInput(
@@ -121,26 +124,26 @@ class Contact(BaseModel):
         return [Contact(**contact) for contact in traverse(r.json()["data"]["contacts"])]
 
 
-class Instructor(BaseModel):
-    id: str
-    legacyId: int
-    isInstructor: bool
-    isStaff: bool
-    isAdmin: bool
-    personalName: PersonalName
+@dataclass
+class PlanAddInstructorsInput:
+    contactIds: List[str]
+    planId: str
 
 
-def add_instructors_to_plan(client, plan_id: str, instructor_ids: List[str]):
-    r = client.post(URL_GRAPHQL, json={
-        'query': load_graphql("addInstructorsToPlan"),
-        'variables': {'instInput': {
-            'planId': plan_id,
-            "contactIds": instructor_ids
-        }}
-    })
-    debug(r.status_code, r.reason_phrase, r.json())
-
-
-def read_instructors(client):
-    r = client.post(URL_GRAPHQL, json={'query': load_graphql("getAllInstructors")})
-    return unpack_json_response(r)
+# class Instructor(BaseModel):
+#     id: str
+#     legacyId: int
+#     isInstructor: bool
+#     isStaff: bool
+#     isAdmin: bool
+#     personalName: PersonalName
+#
+#     @classmethod
+#     def create_fake_instructor(cls, client) -> Self:
+#         fake_contact = Contact.create_fake_contact(client)
+#         return Instructor(**fake_contact.dict())
+#
+#     @staticmethod
+#     def read_all_instructors(client) -> List['Instructor']:
+#         r = client.post(URL_GRAPHQL, json={'query': load_graphql("getAllInstructors")})
+#         return [Instructor(**instructor) for instructor in traverse(r.json()["data"]["contacts"])]

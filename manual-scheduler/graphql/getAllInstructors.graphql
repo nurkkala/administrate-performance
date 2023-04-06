@@ -6,6 +6,7 @@ query getAllInstructors {
                 legacyId
                 isInstructor
                 isStaff
+                isAdmin
                 personalName {
                     firstName
                     lastName
