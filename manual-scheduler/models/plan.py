@@ -8,13 +8,14 @@ from pydantic import BaseModel
 
 from data.traverse import traverse
 from graphql.loader import load_graphql
-from data.api_client import URL_GRAPHQL
+from data.api_client import URL_GRAPHQL, ApiClient
 from models.event_need import EventNeed
 from models.instructor import Contact
 from models.location import Location
 from models.resource import Resource
 
 faker = Faker()
+client = ApiClient()
 
 
 @dataclass
@@ -68,41 +69,38 @@ class Plan(BaseModel):
     eventNeeds: List[EventNeed]
 
     @classmethod
-    def create_plan(cls, client, plan_create_input: PlanCreateInput) -> Self:
-        r = client.post(URL_GRAPHQL, json={
-            'query': load_graphql("addPlan"),
-            'variables': {
-                'planInput': {
-                    "name": plan_create_input.name,
-                    "start": plan_create_input.start.isoformat(),
-                    "end": plan_create_input.end.isoformat(),
-                    "scheduleBounds": {
-                        "days": plan_create_input.scheduleBounds.days,
-                        "startTime": plan_create_input.scheduleBounds.startTime.isoformat(),
-                        "endTime": plan_create_input.scheduleBounds.endTime.isoformat()
-                    },
-                    "locationId": plan_create_input.locationId
-                }},
-        })
+    def create_plan(cls, plan_create_input: PlanCreateInput) -> Self:
+        r = client.post("addPlan",
+                        variables={
+                            'planInput': {
+                                "name": plan_create_input.name,
+                                "start": plan_create_input.start.isoformat(),
+                                "end": plan_create_input.end.isoformat(),
+                                "scheduleBounds": {
+                                    "days": plan_create_input.scheduleBounds.days,
+                                    "startTime": plan_create_input.scheduleBounds.startTime.isoformat(),
+                                    "endTime": plan_create_input.scheduleBounds.endTime.isoformat()
+                                },
+                                "locationId": plan_create_input.locationId
+                            }
+                        })
         content = traverse(r.json()["data"]["plan"]["create"]["plan"])
         return cls(**content)
 
     @staticmethod
-    def add_instructors_to_plan(client, plan_add_instructors_input: PlanAddInstructorsInput):
-        r = client.post(URL_GRAPHQL, json={
-            'query': load_graphql("addInstructorsToPlan"),
-            'variables': {'instInput': {
-                'planId': plan_add_instructors_input.planId,
-                "contactIds": plan_add_instructors_input.contactIds
-            }}
-        })
+    def add_instructors_to_plan(plan_add_instructors_input: PlanAddInstructorsInput):
+        r = client.post("addInstructorsToPlan",
+                        variables={'instInput': {
+                            'planId': plan_add_instructors_input.planId,
+                            "contactIds": plan_add_instructors_input.contactIds
+                        }})
         return traverse(r.json()["data"]["plan"]["addInstructors"]["plan"])
 
     @classmethod
-    def create_fake_plan(cls, client):
+    def create_fake_plan(cls):
         start_date_time = faker.future_datetime()
         end_date_time = start_date_time + timedelta(days=7)
-        location = Location.create_fake_location(client)
+        location = Location.create_fake_location()
 
         plan_input = PlanCreateInput(
             name=faker.sentence(),
@@ -113,44 +111,39 @@ class Plan(BaseModel):
                 endTime=time(hour=17),
                 days=["monday", "wednesday", "friday"]),
             locationId=location.id)
-        plan = cls.create_plan(client, plan_input)
+        plan = cls.create_plan(plan_input)
 
-        contact = Contact.create_fake_contact(client, make_instructor=True)
+        instructor = Contact.create_fake_contact(make_instructor=True)
         plan = plan.add_instructors_to_plan(
-            client,
             PlanAddInstructorsInput(planId=plan.id,
-                                    contactIds=[contact.id])
+                                    contactIds=[instructor.id])
         )
         return plan
 
     @staticmethod
-    def read_plans_list(client) -> List['Plan']:
-        r = client.post(URL_GRAPHQL,
-                        timeout=None,
-                        json={
-                            'query': load_graphql("getPlansList"),
-                            "variables": {
-                                "pageSize": 20,
-                                "offset": 0,
-                                "filters": [
-                                    {
-                                        "field": "isArchived",
-                                        "operation": "eq",
-                                        "value": "false"
-                                    },
-                                    {
-                                        "field": "lifecycleState",
-                                        "operation": "in",
-                                        "values": [
-                                            "DRAFT",
-                                            "SOLVED",
-                                            "SOLVING",
-                                            "SOLVE_FAILED",
-                                            "SCHEDULED"
-                                        ]
-                                    }
-                                ]
-                            }
+    def read_plans_list() -> List['Plan']:
+        r = client.post("getPlansList",
+                        variables={
+                            "pageSize": 20,
+                            "offset": 0,
+                            "filters": [
+                                {
+                                    "field": "isArchived",
+                                    "operation": "eq",
+                                    "value": "false"
+                                },
+                                {
+                                    "field": "lifecycleState",
+                                    "operation": "in",
+                                    "values": [
+                                        "DRAFT",
+                                        "SOLVED",
+                                        "SOLVING",
+                                        "SOLVE_FAILED",
+                                        "SCHEDULED"
+                                    ]
+                                }
+                            ]
                         })
         content = r.json()
         filtered_content = traverse(content["data"]["plans"])

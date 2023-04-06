@@ -1,0 +1,8 @@
+fragment resourceDetails on Resource {
+    id
+    legacyId
+    name
+    type {
+        name
+    }
+}

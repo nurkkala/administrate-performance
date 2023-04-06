@@ -1,4 +1,8 @@
-from devtools import debug
+from typing import Optional, Dict
+
+import httpx
+
+from graphql.loader import load_graphql
 
 PHP_SESSION_ID = "4c4edcfc5c334ae49c73ae67f7a2306a"
 URL_BASE = "https://tbn.devadministrateapp.com"
@@ -6,9 +10,33 @@ URL_GRAPHQL = "/graphql"
 BASE_URL = "https://tbn.devadministrateapp.com"
 
 
-def unpack_json_response(r):
-    data = r.json()["data"]
-    assert len(data) == 1
-    key = list(data)[0]
-    edges = data[key]["edges"]
-    return debug([edge['node'] for edge in edges])
+class ApiClient():
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.httpx = httpx.Client(base_url=BASE_URL,
+                                               cookies={"PHPSESSID": PHP_SESSION_ID})
+        return cls._instance
+
+    def __del__(self):
+        self._instance.httpx.close()
+
+    def post(self,
+             graphql_file_name: str,
+             variables: Optional[Dict] = None,
+             url=URL_GRAPHQL):
+        json = {
+            'query': load_graphql(graphql_file_name)
+        }
+        if variables is not None:
+            json['variables'] = variables
+
+        return self._instance.httpx.post(url, timeout=None, json=json)
+
+    def post_rest(self, url: str, data: Dict):
+        return self._instance.httpx.post(url, timeout=None, data=data)
+
+# Credits
+# - https://python-patterns.guide/gang-of-four/singleton/

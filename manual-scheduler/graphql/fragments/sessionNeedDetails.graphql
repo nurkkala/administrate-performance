@@ -1,0 +1,14 @@
+fragment sessionNeedDetails on SessionNeed {
+    id
+    legacyId
+    solution {
+        start
+        end
+        instructors {
+            ...contactDetails
+        }
+        resources {
+            ...resourceDetails
+        }
+    }
+}

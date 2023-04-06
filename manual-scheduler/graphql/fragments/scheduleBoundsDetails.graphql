@@ -1,0 +1,7 @@
+fragment scheduleBoundsDetails on Plan {
+    scheduleBounds {
+        startTime
+        endTime
+        days
+    }
+}

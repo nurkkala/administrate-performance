@@ -3,15 +3,14 @@ from dataclasses import dataclass
 from functools import cache
 from typing import Optional, List, Self
 
-from devtools import debug
 from faker import Faker
 from pydantic import BaseModel
 
-from data.api_client import URL_GRAPHQL, unpack_json_response
+from data.api_client import ApiClient
 from data.traverse import traverse
-from graphql.loader import load_graphql
 
 faker = Faker()
+api_client = ApiClient()
 
 
 class Company(BaseModel):
@@ -21,8 +20,8 @@ class Company(BaseModel):
     name: str
 
     @staticmethod
-    def read_all_companies(client) -> List['Company']:
-        r = client.post(URL_GRAPHQL, json={'query': load_graphql("getAllCompanies")})
+    def read_all_companies() -> List['Company']:
+        r = api_client.post("getAllCompanies")
         return [Company(**company) for company in traverse(r.json()["data"]["companies"])]
 
 
@@ -41,7 +40,7 @@ class Country(BaseModel):
     @staticmethod
     @cache
     def read_all_countries(client) -> List['Country']:
-        r = client.post(URL_GRAPHQL, json={'query': load_graphql("getAllCountries")})
+        r = client.post("getAllCountries")
         return [Country(**country) for country in r.json()["data"]["countries"]]
 
     @classmethod
@@ -67,32 +66,30 @@ class Region(BaseModel):
     countries: List[Country]
 
     @classmethod
-    def create_region(cls, client, region_create_input: RegionCreateInput):
-        r = client.post(URL_GRAPHQL, json={
-            'query': load_graphql("addRegion"),
-            'variables': {"regInput":
-                {
-                    'code': region_create_input.code,
-                    'name': region_create_input.name,
-                    'companyId': region_create_input.companyId
-                }
-            }
-        })
+    def create_region(cls, region_create_input: RegionCreateInput):
+        r = api_client.post("addRegion",
+                            variables={"regInput":
+                            {
+                                'code': region_create_input.code,
+                                'name': region_create_input.name,
+                                'companyId': region_create_input.companyId
+                            }
+                        })
         result = r.json()["data"]["regions"]["create"]["region"]
         return cls(**result)
 
     @classmethod
-    def fake_region(cls, client):
-        companies = Company.read_all_companies(client)
+    def fake_region(cls):
+        companies = Company.read_all_companies()
         assert len(companies) > 0
-        return cls.create_region(client,
-                                 RegionCreateInput(code=faker.word().upper(),
-                                                   name=" ".join(faker.words()).title(),
-                                                   companyId=companies[0].id))
+        return cls.create_region(
+            RegionCreateInput(code=faker.word().upper(),
+                              name=" ".join(faker.words()).title(),
+                              companyId=companies[0].id))
 
     @staticmethod
-    def read_all_regions(client) -> List['Region']:
-        r = client.post(URL_GRAPHQL, json={'query': load_graphql("getAllRegions")})
+    def read_all_regions() -> List['Region']:
+        r = api_client.post("getAllRegions")
         return [Region(**region) for region in traverse(r.json()["data"]["regions"])]
 
 
@@ -117,25 +114,23 @@ class Location(BaseModel):
     region: Optional[Region]
 
     @classmethod
-    def create_location(cls, client, location_create_input: LocationCreateInput) -> Self:
-        r = client.post(URL_GRAPHQL, json={
-            'query': load_graphql("addLocation"),
-            'variables': {
-                "locInput": {
-                    'name': location_create_input.name,
-                    'description': location_create_input.description,
-                    'regionId': location_create_input.regionId
-                }
-            }
-        })
+    def create_location(cls, location_create_input: LocationCreateInput) -> Self:
+        r = api_client.post("addLocation",
+                            variables={
+                            "locInput": {
+                                'name': location_create_input.name,
+                                'description': location_create_input.description,
+                                'regionId': location_create_input.regionId
+                            }
+                        })
         result = r.json()["data"]["location"]["create"]["location"]
         return cls(**result)
 
     @classmethod
-    def create_fake_location(cls, client) -> Self:
-        regions = Region.read_all_regions(client)
+    def create_fake_location(cls) -> Self:
+        regions = Region.read_all_regions()
         assert len(regions) > 0
-        return cls.create_location(client,
-                                   LocationCreateInput(name=faker.word().upper(),
-                                                       description=faker.sentence(),
-                                                       regionId=random.choice(regions).id))
+        return cls.create_location(
+            LocationCreateInput(name=faker.word().upper(),
+                                description=faker.sentence(),
+                                regionId=random.choice(regions).id))

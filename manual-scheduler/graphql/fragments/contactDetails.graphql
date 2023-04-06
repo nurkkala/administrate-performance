@@ -1,0 +1,17 @@
+fragment contactDetails on Contact {
+    id
+    legacyId
+    isInstructor
+    isStaff
+    isAdmin
+    personalName {
+        firstName
+        lastName
+    }
+    account {
+        id
+        legacyId
+        isIndividual
+        name
+    }
+}

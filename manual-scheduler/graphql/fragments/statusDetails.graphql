@@ -1,0 +1,10 @@
+fragment statusDetails on Plan {
+    status {
+        solveStatus
+        lastScore
+        explainScore
+        archivedAt
+        scheduledAt
+        lifecycleState
+    }
+}

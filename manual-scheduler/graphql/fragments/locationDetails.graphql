@@ -1,0 +1,15 @@
+fragment locationDetails on Plan {
+    location {
+        id
+        legacyId
+        name
+        description
+        address {
+            city
+            country {
+                code
+                name
+            }
+        }
+    }
+}
