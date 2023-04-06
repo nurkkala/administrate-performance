@@ -69,12 +69,12 @@ class Region(BaseModel):
     def create_region(cls, region_create_input: RegionCreateInput):
         r = api_client.post("addRegion",
                             variables={"regInput":
-                            {
-                                'code': region_create_input.code,
-                                'name': region_create_input.name,
-                                'companyId': region_create_input.companyId
-                            }
-                        })
+                                {
+                                    'code': region_create_input.code,
+                                    'name': region_create_input.name,
+                                    'companyId': region_create_input.companyId
+                                }
+                            })
         result = r.json()["data"]["regions"]["create"]["region"]
         return cls(**result)
 
@@ -104,6 +104,14 @@ class LocationCreateInput:
     description: str
     regionId: str
 
+    @classmethod
+    def create_fake(cls):
+        regions = Region.read_all_regions()
+        assert len(regions) > 0
+        return cls(name=faker.word().upper(),
+                   description=faker.sentence(),
+                   regionId=random.choice(regions).id)
+
 
 class Location(BaseModel):
     id: str
@@ -117,20 +125,15 @@ class Location(BaseModel):
     def create_location(cls, location_create_input: LocationCreateInput) -> Self:
         r = api_client.post("addLocation",
                             variables={
-                            "locInput": {
-                                'name': location_create_input.name,
-                                'description': location_create_input.description,
-                                'regionId': location_create_input.regionId
-                            }
-                        })
+                                "locInput": {
+                                    'name': location_create_input.name,
+                                    'description': location_create_input.description,
+                                    'regionId': location_create_input.regionId
+                                }
+                            })
         result = r.json()["data"]["location"]["create"]["location"]
         return cls(**result)
 
     @classmethod
     def create_fake_location(cls) -> Self:
-        regions = Region.read_all_regions()
-        assert len(regions) > 0
-        return cls.create_location(
-            LocationCreateInput(name=faker.word().upper(),
-                                description=faker.sentence(),
-                                regionId=random.choice(regions).id))
+        return cls.create_location(LocationCreateInput.create_fake())

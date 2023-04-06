@@ -4,6 +4,12 @@ mutation addResource($name: String!, $typeId: ID!) {
             id
             legacyId
             name
+            type {
+                id
+                legacyId
+                name
+                description
+            }
         }
     }
 }

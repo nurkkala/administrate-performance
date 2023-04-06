@@ -17,6 +17,10 @@ client = ApiClient()
 class AccountCreateInput:
     name: str
 
+    @classmethod
+    def create_fake(cls) -> Self:
+        return AccountCreateInput(name=faker.word().upper())
+
 
 class Account(BaseModel):
     id: str
@@ -37,7 +41,7 @@ class Account(BaseModel):
 
     @classmethod
     def create_fake_account(cls) -> Self:
-        return cls.create_account(AccountCreateInput(name=faker.word().upper()))
+        return cls.create_account(AccountCreateInput.create_fake())
 
     @staticmethod
     @cache
@@ -54,8 +58,8 @@ class PersonalNameCreateInput:
     @classmethod
     def create_fake(cls):
         return PersonalNameCreateInput(
-            firstName=faker.firstName(),
-            lastName=faker.lastName())
+            firstName=faker.first_name(),
+            lastName=faker.last_name())
 
 
 @dataclass
@@ -68,7 +72,7 @@ class ContactCreateInput:
 
     @classmethod
     def create_fake(cls, make_instructor=False) -> Self:
-        accounts = Account.read_all_accounts(client)
+        accounts = Account.read_all_accounts()
         non_individual_accounts = [account for account in accounts if not account.isIndividual]
         assert len(non_individual_accounts) > 0
 
@@ -118,26 +122,10 @@ class Contact(BaseModel):
         accounts = Account.read_all_accounts()
         non_individual_accounts = [account for account in accounts if not account.isIndividual]
         assert len(non_individual_accounts) > 0
-
-        is_instructor = True if make_instructor else faker.boolean()
-
-        return cls.create_contact(
-            ContactCreateInput(accountId=random.choice(non_individual_accounts).id,
-                               isInstructor=is_instructor,
-                               isStaff=faker.boolean(),
-                               isAdmin=faker.boolean(),
-                               personalName=PersonalNameCreateInput(
-                                   firstName=faker.first_name(),
-                                   lastName=faker.last_name()
-                               )))
+        return cls.create_contact(ContactCreateInput.create_fake(make_instructor))
 
     @staticmethod
     def read_contacts() -> List['Contact']:
         r = client.post("getAllContacts")
         return [Contact(**contact) for contact in traverse(r.json()["data"]["contacts"])]
 
-
-@dataclass
-class PlanAddInstructorsInput:
-    contactIds: List[str]
-    planId: str

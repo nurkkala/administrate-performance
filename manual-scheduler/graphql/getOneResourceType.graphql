@@ -1,0 +1,12 @@
+query getOneResourceType($name: String!) {
+    resourceTypes(filters: [{field: name, operation: eq, value: $name}]) {
+        edges {
+            node {
+                id
+                legacyId
+                name
+                description
+            }
+        }
+    }
+}

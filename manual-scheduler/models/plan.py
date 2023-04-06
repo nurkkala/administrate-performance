@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import time, datetime, timedelta
+import random
 from typing import List, Optional, Self
 
 from devtools import debug
@@ -24,6 +25,17 @@ class PlanScheduleBoundsInput:
     endTime: time
     days: List[str]
 
+    @classmethod
+    def create_fake(cls):
+        start_hour = random.randint(8, 11)
+        end_hour = start_hour + random.randint(1, 6)
+        return cls(
+            startTime=time(hour=start_hour),
+            endTime=time(hour=end_hour),
+            days=random.sample(
+                ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
+                k=random.randint(1, 5)))
+
 
 @dataclass
 class PlanCreateInput:
@@ -37,6 +49,12 @@ class PlanCreateInput:
 @dataclass
 class PlanAddInstructorsInput:
     contactIds: List[str]
+    planId: str
+
+
+@dataclass
+class PlanAddResourcesInput:
+    resourceIds: List[str]
     planId: str
 
 
@@ -90,34 +108,52 @@ class Plan(BaseModel):
     @staticmethod
     def add_instructors_to_plan(plan_add_instructors_input: PlanAddInstructorsInput):
         r = client.post("addInstructorsToPlan",
-                        variables={'instInput': {
-                            'planId': plan_add_instructors_input.planId,
-                            "contactIds": plan_add_instructors_input.contactIds
-                        }})
+                        variables={
+                            'instInput': {
+                                'planId': plan_add_instructors_input.planId,
+                                "contactIds": plan_add_instructors_input.contactIds
+                            }
+                        })
         return traverse(r.json()["data"]["plan"]["addInstructors"]["plan"])
+
+    @staticmethod
+    def add_resources_to_plan(plan_add_resources_input: PlanAddResourcesInput):
+        r = client.post("addResourcesToPlan",
+                        variables={
+                            'resInput': {
+                                'planId': plan_add_resources_input.planId,
+                                'resourceIds': plan_add_resources_input.resourceIds
+                            }
+                        })
+        return traverse(r.json()["data"]["plan"]["addResources"]["plan"])
 
     @classmethod
     def create_fake_plan(cls):
         start_date_time = faker.future_datetime()
-        end_date_time = start_date_time + timedelta(days=7)
+        end_date_time = start_date_time + timedelta(days=random.randint(3, 7))
         location = Location.create_fake_location()
 
-        plan_input = PlanCreateInput(
+        plan = cls.create_plan(PlanCreateInput(
             name=faker.sentence(),
             start=start_date_time,
             end=end_date_time,
-            scheduleBounds=PlanScheduleBoundsInput(
-                startTime=time(hour=9),
-                endTime=time(hour=17),
-                days=["monday", "wednesday", "friday"]),
-            locationId=location.id)
-        plan = cls.create_plan(plan_input)
+            scheduleBounds=PlanScheduleBoundsInput.create_fake(),
+            locationId=location.id))
 
         instructor = Contact.create_fake_contact(make_instructor=True)
-        plan = plan.add_instructors_to_plan(
+        plan = Plan.add_instructors_to_plan(
             PlanAddInstructorsInput(planId=plan.id,
                                     contactIds=[instructor.id])
         )
+
+        # `Plan` is now a `dict` instead of a `Plan`. :-(
+
+        resources = [Resource.create_fake() for _ in range(5)]
+        plan = Plan.add_resources_to_plan(
+            PlanAddResourcesInput(planId=plan.id,
+                                  resourceIds=[resource.id for resource in resources])
+        )
+
         return plan
 
     @staticmethod

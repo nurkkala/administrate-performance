@@ -10,7 +10,10 @@ URL_GRAPHQL = "/graphql"
 BASE_URL = "https://tbn.devadministrateapp.com"
 
 
-class ApiClient():
+class ApiClient:
+    """
+    The API client. Implemented as a singleton.
+    """
     _instance = None
 
     def __new__(cls):
@@ -27,6 +30,7 @@ class ApiClient():
              graphql_file_name: str,
              variables: Optional[Dict] = None,
              url=URL_GRAPHQL):
+        """Post a GraphQL operation."""
         json = {
             'query': load_graphql(graphql_file_name)
         }
@@ -35,7 +39,8 @@ class ApiClient():
 
         return self._instance.httpx.post(url, timeout=None, json=json)
 
-    def post_rest(self, url: str, data: Dict):
+    def post_form(self, url: str, data: Dict):
+        """Post an HTTP form."""
         return self._instance.httpx.post(url, timeout=None, data=data)
 
 # Credits
