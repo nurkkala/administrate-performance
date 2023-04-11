@@ -1,3 +1,5 @@
 OLD/
 __pycache__/
 .idea/
+venv/
+*.profile
