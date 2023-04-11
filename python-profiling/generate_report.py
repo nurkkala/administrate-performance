@@ -14,11 +14,14 @@ class ReportType(StrEnum):
 
 def main(path: Path,
          strip_dirs: bool = True,
-         report_type: ReportType = ReportType.STATS,
-         sort_by: SortKey = SortKey.CUMULATIVE,
+         report_type: ReportType = typer.Option(ReportType.STATS, help="Report stats, callers, or callees"),
+         sort_by: SortKey = typer.Option(SortKey.CUMULATIVE, help="Sort order"),
          max_lines: Optional[int] = typer.Option(None, min=1, help="Count of lines"),
          percent_lines: Optional[int] = typer.Option(None, min=1, max=100, help="Percentage of lines"),
          re_filter: Optional[str] = typer.Option(None, help="Reg exp to match name")):
+    """
+    Inspect the contents of a Python profiler data file.
+    """
     if not path.is_file():
         print(f"File '{path}' doesn't exist")
         raise typer.Exit(1)
