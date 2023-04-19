@@ -1,15 +1,14 @@
+import random
 from dataclasses import dataclass
 from datetime import time, datetime, timedelta
-import random
 from typing import List, Optional, Self
 
 from devtools import debug
 from faker import Faker
 from pydantic import BaseModel
 
+from data.api_client import ApiClient
 from data.traverse import traverse
-from graphql.loader import load_graphql
-from data.api_client import URL_GRAPHQL, ApiClient
 from models.event_need import EventNeed
 from models.instructor import Contact
 from models.location import Location
@@ -105,8 +104,8 @@ class Plan(BaseModel):
         content = traverse(r.json()["data"]["plan"]["create"]["plan"])
         return cls(**content)
 
-    @staticmethod
-    def add_instructors_to_plan(plan_add_instructors_input: PlanAddInstructorsInput):
+    @classmethod
+    def add_instructors_to_plan(cls, plan_add_instructors_input: PlanAddInstructorsInput) -> Self:
         r = client.post("addInstructorsToPlan",
                         variables={
                             'instInput': {
@@ -114,7 +113,8 @@ class Plan(BaseModel):
                                 "contactIds": plan_add_instructors_input.contactIds
                             }
                         })
-        return traverse(r.json()["data"]["plan"]["addInstructors"]["plan"])
+        content = traverse(r.json()["data"]["plan"]["addInstructors"]["plan"])
+        return cls(**content)
 
     @staticmethod
     def add_resources_to_plan(plan_add_resources_input: PlanAddResourcesInput):
@@ -128,7 +128,7 @@ class Plan(BaseModel):
         return traverse(r.json()["data"]["plan"]["addResources"]["plan"])
 
     @classmethod
-    def create_fake_plan(cls):
+    def create_fake_plan(cls) -> Self:
         start_date_time = faker.future_datetime()
         end_date_time = start_date_time + timedelta(days=random.randint(3, 7))
         location = Location.create_fake_location()
@@ -141,7 +141,7 @@ class Plan(BaseModel):
             locationId=location.id))
 
         instructor = Contact.create_fake_contact(make_instructor=True)
-        plan = Plan.add_instructors_to_plan(
+        new_plan = Plan.add_instructors_to_plan(
             PlanAddInstructorsInput(planId=plan.id,
                                     contactIds=[instructor.id])
         )

@@ -2,33 +2,7 @@ mutation addLocation($locInput: LocationCreateInput!) {
     location {
         create(input: $locInput) {
             location {
-                id
-                legacyId
-                code
-                name
-                description
-                region {
-                    id
-                    legacyId
-                    code
-                    name
-                    company {
-                        id
-                        legacyId
-                        code
-                        name
-                    }
-                    countries {
-                        id
-                        code
-                        name
-                        provinces {
-                            code
-                            name
-                        }
-                        timeZones
-                    }
-                }
+                ...locationDetails
             }
             errors {
                 label

@@ -1,6 +1,6 @@
-mutation addInstructorsToPlan($instInput: PlanAddInstructorsInput!) {
+mutation addResourcesToPlan($resInput: PlanAddResourcesInput!) {
     plan {
-        addInstructors(input: $instInput) {
+        addResources(input: $resInput) {
             plan {
                 ...planDetails
             }

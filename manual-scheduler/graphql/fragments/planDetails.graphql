@@ -1,0 +1,53 @@
+fragment planDetails on Plan {
+    id
+    legacyId
+    name
+    start
+    end
+    ...scheduleBoundsDetails
+    ...statusDetails
+    instructors {
+        edges {
+            node {
+                ...contactDetails
+            }
+        }
+    }
+    resources {
+        edges {
+            node {
+                ...resourceDetails
+            }
+        }
+    }
+    eventNeeds {
+        id
+        legacyId
+        courseTemplate {
+            id
+            legacyId
+            title
+        }
+        sessionNeeds {
+            id
+            legacyId
+            solution {
+                start
+                end
+                instructors {
+                    ...contactDetails
+                }
+                resources {
+                    id
+                    legacyId
+                    name
+                    type {
+                        id
+                        legacyId
+                        name
+                    }
+                }
+            }
+        }
+    }
+}

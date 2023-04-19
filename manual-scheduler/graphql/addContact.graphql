@@ -2,21 +2,7 @@ mutation addContact($contactInput: ContactCreateInput!) {
     contact {
         create(input: $contactInput) {
             contact {
-                id
-                legacyId
-                isInstructor
-                isStaff
-                isAdmin
-                personalName {
-                    firstName
-                    lastName
-                }
-                account {
-                    id
-                    legacyId
-                    name
-                    isIndividual
-                }
+                ...contactDetails
             }
             errors {
                 label

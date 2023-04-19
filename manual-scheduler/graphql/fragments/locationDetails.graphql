@@ -1,15 +1,30 @@
-fragment locationDetails on Plan {
-    location {
+fragment locationDetails on Location {
+    id
+    legacyId
+    code
+    name
+    description
+    region {
         id
         legacyId
+        code
         name
-        description
-        address {
-            city
-            country {
+        company {
+            id
+            legacyId
+            code
+            name
+        }
+        countries {
+            id
+            code
+            name
+            provinces {
                 code
                 name
             }
+            timeZones
         }
+
     }
 }
