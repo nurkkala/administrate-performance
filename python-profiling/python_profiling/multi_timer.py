@@ -17,21 +17,21 @@ class MTState(Enum):
 
 
 class MultiTimer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.records: list[MTRecord] = []
         self.state: MTState = MTState.READY
 
-    def start(self):
+    def start(self) -> None:
         assert self.state is MTState.READY
         self.state = MTState.RUNNING
         self.record('[START]')
 
-    def reset(self):
+    def reset(self) -> None:
         assert self.state is MTState.STOPPED
         self.records = []
         self.state = MTState.READY
 
-    def record(self, label: str, flags=0):
+    def record(self, label: str, flags=0) -> None:
         assert self.state is MTState.RUNNING
         self.records.append(MTRecord(label, perf_counter_ns(), flags))
 
@@ -39,7 +39,7 @@ class MultiTimer:
     def ns_to_sec(ns: int) -> float:
         return float(ns) / 1_000_000_000
 
-    def report(self, prefix=""):
+    def report(self, prefix="") -> str:
         assert self.state is MTState.RUNNING
         self.record("[STOP]")
         self.state = MTState.STOPPED
@@ -83,26 +83,4 @@ class MultiTimer:
 
             lines.append(" ".join(fields))
 
-        print("\n".join(lines), flush=True)
-
-
-if __name__ == '__main__':
-    import random
-    from time import sleep
-
-
-    def run_one_test(multi_timer: MultiTimer, prefix=""):
-        multi_timer.start()
-        for label in ['alpha', 'beta', 'gamma']:
-            nap_time = random.random() / 10.0
-            random_flags = random.randint(0, 8)
-            print(label, nap_time)
-            sleep(nap_time)
-            multi_timer.record(label, random_flags)
-        multi_timer.report(prefix)
-
-
-    mt = MultiTimer()
-    run_one_test(mt)
-    mt.reset()
-    run_one_test(mt, "CPU0")
+        return "\n".join(lines)
