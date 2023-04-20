@@ -49,7 +49,7 @@ if __name__ == '__main__':
             return memoized_fibonacci(n - 1) + memoized_fibonacci(n - 2)
 
 
-    @profile_function(file_name="flub-zub.dat")
+    @profile_function()
     def fib_to_file(n: int) -> tuple[int, ...]:
         return dumb_fibonacci(n), memoized_fibonacci(n)
 
@@ -59,5 +59,6 @@ if __name__ == '__main__':
         return dumb_fibonacci(n), memoized_fibonacci(n)
 
 
-    print(fib_to_file(32))
-    print(fib_to_screen(32))
+    nth_fib_number = 30
+    print(fib_to_file(nth_fib_number))
+    print(fib_to_screen(nth_fib_number))

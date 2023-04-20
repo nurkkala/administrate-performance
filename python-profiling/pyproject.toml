@@ -2,13 +2,14 @@
 name = "python-profiling"
 version = "0.1.0"
 description = "Simple Python profiling tools"
-authors = ["Your Name <you@example.com>"]
+authors = ["Tom Nurkkala <tbn@administrate.co>"]
 readme = "README.md"
 packages = [{include = "python_profiling"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 typer = {extras = ["all"], version = "^0.7.0"}
+pytest = "^7.3.1"
 
 
 [build-system]
