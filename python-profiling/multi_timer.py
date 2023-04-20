@@ -49,11 +49,10 @@ class MultiTimer:
         record_count = len(self.records)
         total_time = self.records[-1].time - self.records[0].time
 
-        header = "{label:{label_width}s} {prof_time:>15s}  {dur_ns:>15s}   {dur_s:>15s}  {per:>8s}".format(
+        header = "{label:{label_width}s} {prof_time:>15s}  {dur_s:>15s}  {per:>8s}".format(
             label="Label",
             label_width=max_label_width + prefix_width,
-            prof_time="Time",
-            dur_ns="Elapsed (ns)",
+            prof_time="Time Stamp",
             dur_s="Elapsed (s)",
             per="% Time"
         )
@@ -69,15 +68,13 @@ class MultiTimer:
 
             if i < record_count - 1:
                 elapsed_time = self.records[i + 1].time - self.records[i].time
-                fields.append(f"{elapsed_time:16d}")
 
                 time_sec = self.ns_to_sec(elapsed_time)
-                fields.append(f"{time_sec:17.9f}")
+                fields.append(f"{time_sec:16.9f}")
 
                 percentage = elapsed_time / total_time * 100.0
                 fields.append(f"{percentage:9.2f}")
             else:
-                fields.append(f"[{total_time:15d}]")
                 fields.append(f"[{self.ns_to_sec(total_time):15.9f}]")
                 fields.append(f"{100.0:8.2f}")
 
@@ -94,17 +91,18 @@ if __name__ == '__main__':
     from time import sleep
 
 
-    def run_one_test(multi_timer: MultiTimer):
+    def run_one_test(multi_timer: MultiTimer, prefix=""):
         multi_timer.start()
         for label in ['alpha', 'beta', 'gamma']:
-            nap_time = random.randint(0, 2)
+            nap_time = random.random() / 10.0
+            random_flags = random.randint(0, 8)
             print(label, nap_time)
             sleep(nap_time)
-            multi_timer.record(label, nap_time * 2)
-        multi_timer.report()
+            multi_timer.record(label, random_flags)
+        multi_timer.report(prefix)
 
 
     mt = MultiTimer()
     run_one_test(mt)
     mt.reset()
-    run_one_test(mt)
+    run_one_test(mt, "CPU0")

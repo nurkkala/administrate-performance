@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "python-profiling"
+version = "0.1.0"
+description = "Simple Python profiling tools"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "python_profiling"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = {extras = ["all"], version = "^0.7.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

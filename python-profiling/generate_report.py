@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from enum import StrEnum
 from pathlib import Path
 from pstats import Stats, SortKey
