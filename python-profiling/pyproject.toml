@@ -10,6 +10,7 @@ packages = [{include = "python_profiling"}]
 python = "^3.11"
 typer = {extras = ["all"], version = "^0.7.0"}
 pytest = "^7.3.1"
+coverage = "^7.2.3"
 
 
 [build-system]
