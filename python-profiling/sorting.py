@@ -1,3 +1,5 @@
+# All sorting code from https://rosettacode.org/wiki/Rosetta_Code
+
 from heapq import merge
 import random
 
@@ -83,7 +85,7 @@ def shell_sort(arr):
 
 
 def bubble_sort(arr):
-    """n^2 Sort"""
+    """n^2 sort"""
     arr_copy = arr[:]  # Sorts in place
     changed = True
     while changed:
